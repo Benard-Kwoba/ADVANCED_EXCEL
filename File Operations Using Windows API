@@ -1,6 +1,7 @@
 ' This VBA script demonstrates how to use Windows API functions to perform file operations
 ' such as creating, writing, and reading a file. Additionally, it retrieves the current system
 ' time and displays it in a message box.
+
 ' _____________________________________________________ Declare API functions for file operations and system time _______________________________________________________________________________
 Private Declare PtrSafe Function CreateFile Lib "kernel32" _
     Alias "CreateFileA" (ByVal lpFileName As String, ByVal dwDesiredAccess As Long, _
@@ -33,7 +34,8 @@ Private Type systemTime
     wSecond As Integer
     wMilliseconds As Integer
 End Type
-' _____________________________________________________ APIExample  _______________________________________________________________________________
+
+' _____________________________________________________ APIExample subroutine for file creation, writing, reading, and system time retrieval ______________________________________________________________
 Sub APIExample()
     ' Define a string variable to hold the file path
     Dim filePath As String
