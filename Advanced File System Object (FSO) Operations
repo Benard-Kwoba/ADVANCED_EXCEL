@@ -1,0 +1,141 @@
+Option Explicit
+
+' Option Explicit forces explicit declaration of all variables in the module.
+' This helps prevent errors by ensuring all variables are declared before use,
+' which can help avoid issues related to typos or undeclared variables.
+
+' Main Subroutine to execute all advanced FSO operations
+Sub AdvancedFSODemo()
+    Dim fso As Object
+    Dim rootFolder As String
+    Dim newFolder As String
+    Dim filePath As String
+    Dim fileContent As String
+    Dim searchFolder As String
+    
+    ' Initialize FileSystemObject
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Define root folder and new folder paths
+    rootFolder = Environ("USERPROFILE") & "\Desktop\FSODemo" ' Root folder on desktop
+    newFolder = rootFolder & "\NewFolder" ' Subfolder path within root folder
+    filePath = newFolder & "\ExampleFile.txt" ' File path for the text file
+    
+    ' Create Root Folder
+    ' Check if the root folder does not exist
+    If Not fso.FolderExists(rootFolder) Then
+        ' Create the root folder
+        fso.CreateFolder (rootFolder)
+    End If
+    
+    ' Create New Subfolder
+    ' Check if the new subfolder does not exist
+    If Not fso.FolderExists(newFolder) Then
+        ' Create the new subfolder
+        fso.CreateFolder (newFolder)
+    End If
+    
+    ' Write to a Text File
+    fileContent = "This is an example of writing to a text file using FileSystemObject."
+    ' Call the WriteToFile subroutine to create or overwrite the file with content
+    WriteToFile fso, filePath, fileContent
+    
+    ' Read from the Text File
+    fileContent = ReadFromFile(fso, filePath)
+    ' Display the content of the file in a message box
+    MsgBox "File Content: " & vbCrLf & fileContent
+    
+    ' Copy File
+    Dim copyPath As String
+    copyPath = rootFolder & "\CopyOfExampleFile.txt" ' Path for the copied file
+    ' Check if the original file exists
+    If fso.FileExists(filePath) Then
+        ' Copy the file to the new path
+        fso.CopyFile filePath, copyPath
+    End If
+    
+    ' Move File
+    Dim movedPath As String
+    movedPath = newFolder & "\MovedFile.txt" ' Path for the moved file
+    ' Check if the copied file exists
+    If fso.FileExists(copyPath) Then
+        ' Move the file to the new subfolder
+        fso.MoveFile copyPath, movedPath
+    End If
+    
+    ' Delete File
+    ' Check if the moved file exists
+    If fso.FileExists(movedPath) Then
+        ' Delete the file
+        fso.DeleteFile movedPath
+    End If
+    
+    ' Recursively Search for Files
+    searchFolder = rootFolder
+    ' Call the SearchFiles function to get a list of files
+    MsgBox "Files in " & searchFolder & ":" & vbCrLf & SearchFiles(fso, searchFolder)
+    
+    ' Clean up
+    ' Delete the root folder and all its contents
+    fso.DeleteFolder rootFolder, True
+    ' Release the FileSystemObject
+    Set fso = Nothing
+End Sub
+
+' Subroutine to write content to a file
+Sub WriteToFile(fso As Object, filePath As String, content As String)
+    Dim file As Object
+    ' Create or overwrite the text file and write content to it
+    Set file = fso.CreateTextFile(filePath, True)
+    file.Write content
+    file.Close
+End Sub
+
+' Function to read content from a file
+Function ReadFromFile(fso As Object, filePath As String) As String
+    Dim file As Object
+    Dim content As String
+    
+    ' Check if the file exists
+    If fso.FileExists(filePath) Then
+        ' Open the text file for reading
+        Set file = fso.OpenTextFile(filePath, 1) ' 1 = ForReading
+        content = file.ReadAll
+        file.Close
+    Else
+        content = "File does not exist."
+    End If
+    
+    ' Return the file content
+    ReadFromFile = content
+End Function
+
+' Function to recursively search for files in a folder and subfolders
+Function SearchFiles(fso As Object, folderPath As String) As String
+    Dim folder As Object
+    Dim subfolder As Object
+    Dim file As Object
+    Dim fileList As String
+    
+    fileList = ""
+    
+    ' Check if the folder exists
+    If fso.FolderExists(folderPath) Then
+        ' Get the folder object
+        Set folder = fso.GetFolder(folderPath)
+        
+        ' List files in the folder
+        For Each file In folder.Files
+            fileList = fileList & file.Path & vbCrLf
+        Next file
+        
+        ' Recursively list files in subfolders
+        For Each subfolder In folder.SubFolders
+            fileList = fileList & SearchFiles(fso, subfolder.Path)
+        Next subfolder
+    End If
+    
+    ' Return the list of files
+    SearchFiles = fileList
+End Function
+
