@@ -1,0 +1,54 @@
+Example Data (in range A1
+):
+A1: KDD 086Z
+A2: KAX 230U
+A3: KBP 348E
+A4: KBQ 708U
+A5: KDD 086Z
+A6: KBP 348E
+A7: KBJ 239D
+A8: KBQ 708U
+A9: KBJ 239D
+A10: KAX 230U
+
+Applying the Formula:
+Step 1: MATCH(A1:A10, A1:A10, 0)
+This returns the positions of the first occurrence of each value in the range A1:A10:
+{1, 2, 3, 4, 1, 3, 7, 4, 7, 2}
+Explanation:
+KDD 086Z is found first at A1, so its first occurrence is 1.
+KAX 230U is first found at A2, so its first occurrence is 2.
+KBP 348E is first found at A3, so its first occurrence is 3.
+KBQ 708U is first found at A4, so its first occurrence is 4.
+KBJ 239D is first found at A7, so its first occurrence is 7.
+
+Step 2: FREQUENCY(..., ...)
+The FREQUENCY function then calculates how many times each unique position occurs:
+{2, 2, 2, 2, 0, 0, 2, 0, 0, 0}
+Explanation:
+Position 1 appears twice (for KDD 086Z).
+Position 2 appears twice (for KAX 230U).
+Position 3 appears twice (for KBP 348E).
+Position 4 appears twice (for KBQ 708U).
+Position 7 appears twice (for KBJ 239D).
+All other positions return 0 because they are duplicates.
+
+Step 3: IF(FREQUENCY(...) > 0, 1)
+Convert the frequency array to 1 for each unique value:
+{1, 1, 1, 1, 0, 0, 1, 0, 0, 0}
+Explanation:
+For positions with frequencies greater than 0, IF returns 1.
+Duplicates result in 0.
+
+Step 4: SUM(...)
+Summing these values gives the count of unique items:
+1 + 1 + 1 + 1 + 1 = 5
+Final Result:
+The formula =SUM(IF(FREQUENCY(MATCH(A1:A10,A1:A10,0),MATCH(A1:A10,A1:A10,0))>0,1)) will return 5, which is the count of unique values in the range A1:A10.
+Unique Values in the Example:
+KDD 086Z
+KAX 230U
+KBP 348E
+KBQ 708U
+KBJ 239D
+These are the 5 unique values counted by the formula.
