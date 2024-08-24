@@ -1,3 +1,4 @@
+__________________________________________________________________________________________ FORMULA ______________________________________________________________________________
 Example Data (in range A1
 ):
 A1: KDD 086Z
@@ -48,7 +49,31 @@ The formula =SUM(IF(FREQUENCY(MATCH(A1:A10,A1:A10,0),MATCH(A1:A10,A1:A10,0))>0,1
 Unique Values in the Example:
 KDD 086Z
 KAX 230U
+
+_________________________________________________________________________ VBA ____________________________________________________________________________________________
+Function CountUniqueValues(rng As Range) As Long
+    Dim cell As Range
+    Dim dict As Object
+    Dim value As Variant
+    
+    ' Create a dictionary to store unique values
+    Set dict = CreateObject("Scripting.Dictionary")
+    
+    ' Loop through each cell in the range
+    For Each cell In rng
+        value = cell.Value
+        
+        ' Add value to dictionary if it's not already present
+        If Not dict.exists(value) And Not IsEmpty(value) Then
+            dict.Add value, Nothing
+        End If
+    Next cell
+    
+    ' Return the count of unique values
+    CountUniqueValues = dict.Count
+End Function
+
 KBP 348E
 KBQ 708U
 KBJ 239D
-These are the 5 unique values counted by the formula.
+' These are the 5 unique values counted by the formula.
