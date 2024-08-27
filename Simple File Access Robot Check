@@ -1,0 +1,57 @@
+#If VBA7 Then ' # used for conditional compilation in VBA.
+    Private Declare PtrSafe Function GetTickCount64 Lib "kernel32" () As LongPtr 'LongLong data type is not supported
+#Else
+    Private Declare Function GetTickCount64 Lib "kernel32" () As Long
+#End If
+
+Dim num1 As Integer
+Dim num2 As Integer
+Dim expectedSum As Integer
+Dim userAnswer As Variant
+Dim closeTime As Date
+
+
+Sub Auto_Open()
+    ' Initialize variables
+    num1 = WorksheetFunction.RandBetween(55, 99)
+    num2 = WorksheetFunction.RandBetween(1, 10)
+    expectedSum = num1 + num2
+
+    ' Set the time limit (3 seconds from now)
+    closeTime = Now + TimeValue("00:00:03")
+
+    ' Prompt the user to enter the sum
+    userAnswer = InputBox("Please enter the sum of " & num1 & " and " & num2 & ":", "ROBOT CHECK")
+
+    ' Schedule the check function
+    Application.OnTime closeTime, "CheckAnswer"
+End Sub
+
+Sub CheckAnswer()
+    ' Check if the user clicked Cancel or entered nothing
+    If userAnswer = "" Then
+        MsgBox "You clicked Cancel or didn't enter anything. The workbook will close.", , "ROBOT CHECK"
+        ThisWorkbook.Close SaveChanges:=False
+    Else
+        ' Check if the entered sum is correct
+        If CInt(userAnswer) = expectedSum Then
+            MsgBox "Correct! Welcome to the project! You are not a robot.", , "ROBOT CHECK"
+        Else
+            MsgBox "Incorrect sum. The workbook will close.", , "ROBOT CHECK"
+            ThisWorkbook.Close SaveChanges:=False
+        End If
+    End If
+End Sub
+
+Sub CancelCheck()
+    ' Cancel the check function if it hasn't occurred yet
+    On Error Resume Next
+    Application.OnTime closeTime, "CheckAnswer", , False
+    On Error GoTo 0
+End Sub
+
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    ' Cancel the check function if the workbook is closed before the time limit
+    CancelCheck
+End Sub
+
