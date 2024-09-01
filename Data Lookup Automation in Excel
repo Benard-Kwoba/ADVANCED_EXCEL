@@ -1,0 +1,101 @@
+Function YRETTRUCK() As Variant
+    Dim lookupValue As Variant       ' Variable to hold the value we want to look up.
+    Dim lookupRange As Range         ' Range that contains the data to search in.
+    Dim resultColumn As Long         ' Column index from which we want to return the result.
+    Dim result As Variant            ' Variable to hold the result of the VLOOKUP function.
+    Dim externalWorkbook As Workbook ' Variable to hold a reference to the external workbook.
+    Dim callingCell As Range         ' Reference to the cell where the function is being called.
+
+    ' Get the calling cell
+    Set callingCell = Application.Caller
+
+    ' Get the lookup value from the cell two columns to the left of the calling cell
+    ' This assumes that the YRET value is in a cell two columns to the left of where this function is called
+    lookupValue = callingCell.Offset(0, -2).Value
+
+    ' Try to reference the external workbook by name (assuming it's "Book2.xlsx")
+    On Error Resume Next
+    Set externalWorkbook = Workbooks("Book2")
+    On Error GoTo 0
+
+    ' If the workbook is not found, return a reference error
+    If externalWorkbook Is Nothing Then
+        YRETTRUCK = CVErr(xlErrRef)
+        Exit Function
+    End If
+
+    ' Set the lookup range to columns H to J in "Sheet1" of the external workbook
+    ' Column H is assumed to contain the lookup values, and column J the YRET data
+    Set lookupRange = externalWorkbook.Worksheets("Sheet1").Columns("H:J")
+
+    ' Set the column index for the result (3 in this case, meaning column J)
+    resultColumn = 3
+
+    ' Perform the VLOOKUP
+    ' Lookup the value in column H (TruckID), and return the corresponding value from column J (YRET)
+    On Error Resume Next
+    result = Application.WorksheetFunction.VLookup(lookupValue, lookupRange, resultColumn, 0)
+    On Error GoTo 0
+
+    ' If there is an error in the VLOOKUP, return an error value
+    If Err.Number <> 0 Then
+        YRETTRUCK = CVErr(xlErrValue)
+    Else
+        YRETTRUCK = result ' Otherwise, return the found result
+    End If
+End Function
+
+Sub YRETTRUCKFunctionDescription()
+
+    Dim funcName As String          ' Variable to hold the function name
+    Dim funcDescription As String   ' Variable to hold the function description
+
+    ' Set the function name
+    funcName = "YRETTRUCK"
+
+    ' Set the function description
+    funcDescription = "Performs a VLOOKUP in an external workbook (Book2.xlsx) and returns the YRET truck based on the value of YRET cell. The lookup columns in the external workbook should be arranged from H to J."
+
+    ' Add the function description to the UDF in Excel
+    Application.MacroOptions _
+        Macro:=funcName, _
+        Description:=funcDescription
+End Sub
+
+' === Sample Data for "Book2.xlsx" ===
+'
+' Let's assume you have a workbook named "Book2.xlsx" with the following data in "Sheet1":
+'
+' | G       | H       | I       | J       |
+' |---------|---------|---------|---------|
+' | (empty) | TruckID | Location| YRET    |
+' | 1       | TRK001  | NY      | 1000    |
+' | 2       | TRK002  | LA      | 2000    |
+' | 3       | TRK003  | SF      | 3000    |
+'
+' In this scenario:
+' - Column H contains Truck IDs.
+' - Column I contains Locations.
+' - Column J contains YRET values.
+'
+' === How the Code Works ===
+'
+' 1. **Calling the Function**: When you use the `YRETTRUCK` function in a cell, it retrieves the value from the cell two columns to the left of where the function is called.
+'
+' 2. **Referencing "Book2"**: The function attempts to find and reference a workbook named "Book2.xlsx." If this workbook is not open, the function returns a `#REF!` error.
+'
+' 3. **Setting the Lookup Range**: The function defines the lookup range as columns H through J in "Sheet1" of "Book2.xlsx". 
+'
+' 4. **Performing the VLOOKUP**: The function performs a VLOOKUP based on the lookup value (e.g., the TruckID) and returns the corresponding YRET value from column J.
+'
+' 5. **Handling Errors**: If any error occurs during the VLOOKUP (e.g., if the lookup value is not found), the function returns a `#VALUE!` error.
+'
+' 6. **Adding Function Description**: The `YRETTRUCKFunctionDescription` subroutine adds a description to the `YRETTRUCK` function so that when users use this function in Excel, they see a helpful description.
+'
+' === How to Use This Function ===
+'
+' 1. Ensure that "Book2.xlsx" is open.
+' 2. Place the `YRETTRUCK` function in a cell that has the TruckID two columns to the left (in the same row).
+' 3. The function will return the corresponding YRET value from "Book2.xlsx".
+'
+' This function is useful for performing lookups in an external workbook and is especially handy when dealing with multiple workbooks in complex data models.
