@@ -1,26 +1,30 @@
 Sub SetupFSO()
+    ' Initialize a FileSystemObject (FSO) for file and folder operations
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
-    
 End Sub
 
 Sub CreateFolder()
+    ' Initialize the FSO
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
     
-    ' Specify the folder path to create
+    ' Specify the folder path you want to create
     Dim folderPath As String
     folderPath = "C:\MyNewFolder"
     
     ' Check if the folder doesn't exist before creating it
     If Not fso.FolderExists(folderPath) Then
+        ' Create the folder if it doesn't exist
         fso.CreateFolder folderPath
     Else
+        ' Display a message if the folder already exists
         MsgBox "Folder already exists!"
     End If
 End Sub
 
 Sub CreateFile()
+    ' Initialize the FSO
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
     
@@ -28,34 +32,40 @@ Sub CreateFile()
     Dim filePath As String
     filePath = "C:\MyNewFolder\MyFile.txt"
     
-    ' Create the file (will overwrite if it exists)
+    ' Create a text file (overwrites if it already exists)
     Dim fileStream As Object
     Set fileStream = fso.CreateTextFile(filePath, True)
     
     ' Write some text to the file
     fileStream.WriteLine "Hello, world!"
+    
+    ' Close the file after writing
     fileStream.Close
 End Sub
 
 Sub ReadFromFile()
+    ' Initialize the FSO and file stream
     Dim fso As Object, fileStream As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
     
-    ' Specify the file path to read from
+    ' Specify the file path to read
     Dim filePath As String
     filePath = "C:\MyNewFolder\MyFile.txt"
     
-    ' Open the file for reading
+    ' Open the text file for reading (mode 1 for reading)
     Set fileStream = fso.OpenTextFile(filePath, 1)
     
-    ' Read the file content
+    ' Loop through the file and display each line
     Do While Not fileStream.AtEndOfStream
         MsgBox fileStream.ReadLine
     Loop
+    
+    ' Close the file after reading
     fileStream.Close
 End Sub
 
 Sub WriteToFile()
+    ' Initialize the FSO and file stream
     Dim fso As Object, fileStream As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
     
@@ -63,29 +73,33 @@ Sub WriteToFile()
     Dim filePath As String
     filePath = "C:\MyNewFolder\MyFile.txt"
     
-    ' Open the file for writing (will overwrite if it exists)
+    ' Open the text file for writing (mode 2 for writing)
     Set fileStream = fso.OpenTextFile(filePath, 2)
     
-    ' Write some text to the file
+    ' Write new text to the file (overwrites existing content)
     fileStream.WriteLine "This is a new line of text."
+    
+    ' Close the file after writing
     fileStream.Close
 End Sub
 
 Sub CopyFile()
+    ' Initialize the FSO
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
     
-    ' Specify the source and destination paths
+    ' Specify the source file and destination path
     Dim sourcePath As String
     Dim destinationPath As String
     sourcePath = "C:\MyNewFolder\MyFile.txt"
     destinationPath = "C:\MyNewFolder\CopyOfMyFile.txt"
     
-    ' Copy the file
+    ' Copy the file to the new location
     fso.CopyFile sourcePath, destinationPath
 End Sub
 
 Sub MoveFile()
+    ' Initialize the FSO
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
     
@@ -95,11 +109,12 @@ Sub MoveFile()
     sourcePath = "C:\MyNewFolder\MyFile.txt"
     destinationPath = "C:\MyNewFolder\NewFolder\MyFile.txt"
     
-    ' Move the file
+    ' Move the file to the new location
     fso.MoveFile sourcePath, destinationPath
 End Sub
 
 Sub DeleteFile()
+    ' Initialize the FSO
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
     
@@ -107,15 +122,18 @@ Sub DeleteFile()
     Dim filePath As String
     filePath = "C:\MyNewFolder\MyFile.txt"
     
-    ' Delete the file
+    ' Check if the file exists before trying to delete it
     If fso.FileExists(filePath) Then
+        ' Delete the file
         fso.DeleteFile filePath
     Else
+        ' Show a message if the file doesn't exist
         MsgBox "File does not exist!"
     End If
 End Sub
 
 Sub WriteToCSV()
+    ' Initialize the FSO and file stream
     Dim fso As Object, csvFile As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
     
@@ -124,52 +142,64 @@ Sub WriteToCSV()
     filePath = "C:\MyNewFolder\MyFile.csv"
     Set csvFile = fso.CreateTextFile(filePath, True)
     
-    ' Write data to CSV
+    ' Write headers and data into the CSV
     csvFile.WriteLine "Name,Age,Country"
     csvFile.WriteLine "John,30,USA"
     csvFile.WriteLine "Jane,25,UK"
     
+    ' Close the CSV file after writing
     csvFile.Close
 End Sub
 
 Sub ReadBinaryFile()
+    ' Initialize the FSO
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
     
+    ' Specify the binary file path
     Dim filePath As String
     filePath = "C:\MyNewFolder\MyBinaryFile.bin"
     
+    ' Open the binary file
     Dim binaryStream As Object
     Set binaryStream = fso.OpenTextFile(filePath, 1)
     
-    ' Read binary data here (example reads bytes into a string)
+    ' Read the binary content into a string
     Dim binaryData As String
     binaryData = binaryStream.ReadAll
     
+    ' Close the file after reading
     binaryStream.Close
+    
+    ' Display the binary data (as a string)
     MsgBox "Binary data: " & binaryData
 End Sub
 
 Sub FileOperationWithErrorHandling()
+    ' Setup error handling
     On Error GoTo ErrorHandler
     
+    ' Initialize the FSO
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
     
+    ' Specify the file path to read from
     Dim filePath As String
     filePath = "C:\NonExistentFolder\MyFile.txt"
     
-    ' Attempt to read from a file (which might not exist)
+    ' Try to open the file if it exists
     If fso.FileExists(filePath) Then
         Dim fileStream As Object
         Set fileStream = fso.OpenTextFile(filePath, 1)
         MsgBox "File opened successfully"
     Else
+        ' Raise an error if the file does not exist
         Err.Raise vbObjectError + 1, , "File does not exist"
     End If
     
     Exit Sub
     
 ErrorHandler:
+    ' Display error message if an error occurs
     MsgBox "An error occurred: " & Err.Description
 End Sub
