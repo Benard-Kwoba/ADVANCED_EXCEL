@@ -1,0 +1,112 @@
+Sub SetupFSO()
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+End Sub
+
+Sub CreateFolder()
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Specify the folder path to create
+    Dim folderPath As String
+    folderPath = "C:\MyNewFolder"
+    
+    ' Check if the folder doesn't exist before creating it
+    If Not fso.FolderExists(folderPath) Then
+        fso.CreateFolder folderPath
+    Else
+        MsgBox "Folder already exists!"
+    End If
+End Sub
+
+Sub CreateFile()
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Specify the file path to create
+    Dim filePath As String
+    filePath = "C:\MyNewFolder\MyFile.txt"
+    
+    ' Create the file (will overwrite if it exists)
+    Dim fileStream As Object
+    Set fileStream = fso.CreateTextFile(filePath, True)
+    
+    ' Write some text to the file
+    fileStream.WriteLine "Hello, world!"
+    fileStream.Close
+End Sub
+Sub ReadFromFile()
+    Dim fso As Object, fileStream As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Specify the file path to read from
+    Dim filePath As String
+    filePath = "C:\MyNewFolder\MyFile.txt"
+    
+    ' Open the file for reading
+    Set fileStream = fso.OpenTextFile(filePath, 1)
+    
+    ' Read the file content
+    Do While Not fileStream.AtEndOfStream
+        MsgBox fileStream.ReadLine
+    Loop
+    fileStream.Close
+End Sub
+Sub WriteToFile()
+    Dim fso As Object, fileStream As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Specify the file path to write to
+    Dim filePath As String
+    filePath = "C:\MyNewFolder\MyFile.txt"
+    
+    ' Open the file for writing (will overwrite if it exists)
+    Set fileStream = fso.OpenTextFile(filePath, 2)
+    
+    ' Write some text to the file
+    fileStream.WriteLine "This is a new line of text."
+    fileStream.Close
+End Sub
+Sub CopyFile()
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Specify the source and destination paths
+    Dim sourcePath As String
+    Dim destinationPath As String
+    sourcePath = "C:\MyNewFolder\MyFile.txt"
+    destinationPath = "C:\MyNewFolder\CopyOfMyFile.txt"
+    
+    ' Copy the file
+    fso.CopyFile sourcePath, destinationPath
+End Sub
+Sub MoveFile()
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Specify the source and destination paths
+    Dim sourcePath As String
+    Dim destinationPath As String
+    sourcePath = "C:\MyNewFolder\MyFile.txt"
+    destinationPath = "C:\MyNewFolder\NewFolder\MyFile.txt"
+    
+    ' Move the file
+    fso.MoveFile sourcePath, destinationPath
+End Sub
+Sub DeleteFile()
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Specify the file path to delete
+    Dim filePath As String
+    filePath = "C:\MyNewFolder\MyFile.txt"
+    
+    ' Delete the file
+    If fso.FileExists(filePath) Then
+        fso.DeleteFile filePath
+    Else
+        MsgBox "File does not exist!"
+    End If
+End Sub
+
