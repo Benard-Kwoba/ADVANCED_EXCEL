@@ -1,0 +1,25 @@
+Sub RecursiveFileSearch(folderPath As String)
+    Dim fso As Object, folder As Object, subFolder As Object, file As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Get the folder object
+    Set folder = fso.GetFolder(folderPath)
+    
+    ' Loop through files in the folder
+    For Each file In folder.Files
+        If LCase(fso.GetExtensionName(file)) = "txt" Then
+            Debug.Print "Found file: " & file.Path
+        End If
+    Next file
+    
+    ' Recursively search subfolders
+    For Each subFolder In folder.SubFolders
+        RecursiveFileSearch subFolder.Path
+    Next subFolder
+End Sub
+
+' Call this subroutine with a starting directory
+Sub SearchForTxtFiles()
+    RecursiveFileSearch "C:\MyNewFolder"
+End Sub
+
