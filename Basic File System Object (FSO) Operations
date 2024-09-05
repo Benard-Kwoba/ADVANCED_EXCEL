@@ -36,6 +36,7 @@ Sub CreateFile()
     fileStream.WriteLine "Hello, world!"
     fileStream.Close
 End Sub
+
 Sub ReadFromFile()
     Dim fso As Object, fileStream As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
@@ -53,6 +54,7 @@ Sub ReadFromFile()
     Loop
     fileStream.Close
 End Sub
+
 Sub WriteToFile()
     Dim fso As Object, fileStream As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
@@ -68,6 +70,7 @@ Sub WriteToFile()
     fileStream.WriteLine "This is a new line of text."
     fileStream.Close
 End Sub
+
 Sub CopyFile()
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
@@ -81,6 +84,7 @@ Sub CopyFile()
     ' Copy the file
     fso.CopyFile sourcePath, destinationPath
 End Sub
+
 Sub MoveFile()
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
@@ -94,6 +98,7 @@ Sub MoveFile()
     ' Move the file
     fso.MoveFile sourcePath, destinationPath
 End Sub
+
 Sub DeleteFile()
     Dim fso As Object
     Set fso = CreateObject("Scripting.FileSystemObject")
@@ -110,3 +115,61 @@ Sub DeleteFile()
     End If
 End Sub
 
+Sub WriteToCSV()
+    Dim fso As Object, csvFile As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Create a CSV file
+    Dim filePath As String
+    filePath = "C:\MyNewFolder\MyFile.csv"
+    Set csvFile = fso.CreateTextFile(filePath, True)
+    
+    ' Write data to CSV
+    csvFile.WriteLine "Name,Age,Country"
+    csvFile.WriteLine "John,30,USA"
+    csvFile.WriteLine "Jane,25,UK"
+    
+    csvFile.Close
+End Sub
+
+Sub ReadBinaryFile()
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    Dim filePath As String
+    filePath = "C:\MyNewFolder\MyBinaryFile.bin"
+    
+    Dim binaryStream As Object
+    Set binaryStream = fso.OpenTextFile(filePath, 1)
+    
+    ' Read binary data here (example reads bytes into a string)
+    Dim binaryData As String
+    binaryData = binaryStream.ReadAll
+    
+    binaryStream.Close
+    MsgBox "Binary data: " & binaryData
+End Sub
+
+Sub FileOperationWithErrorHandling()
+    On Error GoTo ErrorHandler
+    
+    Dim fso As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    Dim filePath As String
+    filePath = "C:\NonExistentFolder\MyFile.txt"
+    
+    ' Attempt to read from a file (which might not exist)
+    If fso.FileExists(filePath) Then
+        Dim fileStream As Object
+        Set fileStream = fso.OpenTextFile(filePath, 1)
+        MsgBox "File opened successfully"
+    Else
+        Err.Raise vbObjectError + 1, , "File does not exist"
+    End If
+    
+    Exit Sub
+    
+ErrorHandler:
+    MsgBox "An error occurred: " & Err.Description
+End Sub
