@@ -1,6 +1,8 @@
 Sub ConvertKESToUSD()
     Dim KESAmount As Double
     Dim USDAmount As Double
+    Dim USDToEURRate As Double
+    Dim KESToEURRate As Double
     Dim ExchangeRate As Double
     Dim APIKey As String
     Dim url As String
@@ -8,11 +10,11 @@ Sub ConvertKESToUSD()
     Dim http As Object
     Dim parsedJson As Object
     
-    ' Set your API key (this is a placeholder; replace with your actual key)
-    APIKey = "e21f8b4cd3a65c72d91b7f84ca319a8f" ' Your Access Key for the API
+    ' Set your API key
+    APIKey = "d15398f9af248785648105dc60d1f9ce"
     
     ' Get the amount in KES from user input
-    KESAmount = Application.InputBox("Enter the amount in KES:", "Currency Conversion", Type:=1)
+    KESAmount = Application.InputBox("Enter the amount in KES:", "KSH - USD Conversion", Type:=1)
     
     ' Check if the input is valid
     If KESAmount <= 0 Then
@@ -20,8 +22,8 @@ Sub ConvertKESToUSD()
         Exit Sub
     End If
     
-    ' Construct the API request URL using the latest endpoint
-    url = "http://api.exchangeratesapi.io/v1/latest?access_key=" & APIKey & "&base=KES&symbols=USD"
+    ' Construct the API request URL (get both USD and KES rates relative to EUR)
+    url = "http://api.exchangeratesapi.io/v1/latest?access_key=" & APIKey & "&symbols=USD,KES"
     
     ' Create a new HTTP request object
     Set http = CreateObject("MSXML2.XMLHTTP")
@@ -34,14 +36,34 @@ Sub ConvertKESToUSD()
     ' Get the response text
     jsonResponse = http.responseText
     
+    ' Output the raw response for debugging purposes
+    Debug.Print jsonResponse  ' Check in Immediate Window (Ctrl+G)
+    
     ' Parse the JSON response
     Set parsedJson = JsonConverter.ParseJson(jsonResponse)
     
-    ' Get the exchange rate for USD
-    ExchangeRate = parsedJson("rates")("USD")
+    ' Check if the expected rates are available in the parsed JSON
+    If Not parsedJson.Exists("rates") Then
+        MsgBox "Failed to retrieve exchange rates.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Get the exchange rates for USD and KES relative to EUR
+    USDToEURRate = CDbl(parsedJson("rates")("USD"))
+    KESToEURRate = CDbl(parsedJson("rates")("KES"))
+    
+    ' Output the rates for debugging
+    Debug.Print "USD to EUR Rate: " & USDToEURRate
+    Debug.Print "KES to EUR Rate: " & KESToEURRate
+    
+    ' Calculate the KES to USD exchange rate
+    ExchangeRate = (1 / KESToEURRate) * USDToEURRate
+    
+    ' Output the calculated exchange rate for debugging
+    Debug.Print "KES to USD Rate: " & ExchangeRate
     
     ' Calculate the USD amount
-    USDAmount = KESAmount / ExchangeRate
+    USDAmount = KESAmount * ExchangeRate
     
     ' Display the result
     MsgBox KESAmount & " KES is equal to " & Round(USDAmount, 2) & " USD", vbInformation
@@ -52,14 +74,13 @@ ErrHandler:
     MsgBox "Error occurred: " & Err.Description, vbCritical
 End Sub
 
-
 ' VBA doesn’t have built-in support for JSON parsing, so you’ll need to use a JSON parser. One popular option is VBA-JSON.
 ' https://github.com/VBA-tools/VBA-JSON/blob/master/JsonConverter.bas
 ' Import the JsonConverter.bas file into your VBA project by going to File > Import File in the VBA editor.
 ' The Dictionary object is part of the Microsoft Scripting Runtime library. To use it, you need to enable this reference in your VBA environment:
 ' Tools > References > Look for Microsoft Scripting Runtime
 
-' You may need admin permissions to send http requests use below to test if you have acess
+' ================ You may need admin permissions to send http requests use below to test if you have acess ===================
 Sub TestAPIKey()
     Dim http As Object
     Dim jsonResponse As String
