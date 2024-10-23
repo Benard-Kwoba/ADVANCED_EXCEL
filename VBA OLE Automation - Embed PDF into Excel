@@ -42,4 +42,38 @@ ErrHandler:
 
 End Sub
 
+' ============================================ To embed in cell =============================================
+Sub EmbedPDFInCell()
+
+    Dim ws As Worksheet
+    Dim pdfPath As String
+    Dim embedCell As Range
+
+    ' Set the worksheet where you want to embed the PDF
+    Set ws = ThisWorkbook.Sheets("Trials") ' Change this to the actual worksheet name if different
+    
+    ' Path to the PDF you want to embed
+    pdfPath = "C:\Users\OtienBer\Desktop\BenardKwobaResumeSCAIG.pdf" ' Replace with the path to your actual PDF file
+    
+    ' Define the cell where the PDF should be embedded
+    Set embedCell = ws.Range("R12")
+    
+    ' Embed the PDF as an OLE object
+    ws.OLEObjects.Add _
+        Filename:=pdfPath, _
+        Link:=False, _
+        DisplayAsIcon:=True, _
+        IconFileName:="C:\Windows\System32\shell32.dll", _
+        IconIndex:=3, _
+        IconLabel:="Embedded PDF File", _
+        Left:=embedCell.Left, _
+        Top:=embedCell.Top, _
+        Width:=embedCell.Width, _
+        Height:=embedCell.Height
+
+    MsgBox "PDF embedded successfully!"
+
+End Sub
+
+
 
