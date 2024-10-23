@@ -1,0 +1,92 @@
+Sub ConvertKESToUSD()
+    Dim KESAmount As Double
+    Dim USDAmount As Double
+    Dim ExchangeRate As Double
+    Dim APIKey As String
+    Dim url As String
+    Dim jsonResponse As String
+    Dim http As Object
+    Dim parsedJson As Object
+    
+    ' Set your API key (this is a placeholder; replace with your actual key)
+    APIKey = "d15398f9af248785648105dc60d1f9ce" ' Your Access Key for the API
+    
+    ' Get the amount in KES from user input
+    KESAmount = Application.InputBox("Enter the amount in KES:", "Currency Conversion", Type:=1)
+    
+    ' Check if the input is valid
+    If KESAmount <= 0 Then
+        MsgBox "Please enter a valid amount.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Construct the API request URL using the latest endpoint
+    url = "http://api.exchangeratesapi.io/v1/latest?access_key=" & APIKey & "&base=KES&symbols=USD"
+    
+    ' Create a new HTTP request object
+    Set http = CreateObject("MSXML2.XMLHTTP")
+    
+    ' Send the request to the API
+    On Error GoTo ErrHandler
+    http.Open "GET", url, False
+    http.send
+    
+    ' Get the response text
+    jsonResponse = http.responseText
+    
+    ' Parse the JSON response
+    Set parsedJson = JsonConverter.ParseJson(jsonResponse)
+    
+    ' Get the exchange rate for USD
+    ExchangeRate = parsedJson("rates")("USD")
+    
+    ' Calculate the USD amount
+    USDAmount = KESAmount / ExchangeRate
+    
+    ' Display the result
+    MsgBox KESAmount & " KES is equal to " & Round(USDAmount, 2) & " USD", vbInformation
+
+    Exit Sub
+
+ErrHandler:
+    MsgBox "Error occurred: " & Err.Description, vbCritical
+End Sub
+
+
+' VBA doesn’t have built-in support for JSON parsing, so you’ll need to use a JSON parser. One popular option is VBA-JSON.
+' https://github.com/VBA-tools/VBA-JSON/blob/master/JsonConverter.bas
+' Import the JsonConverter.bas file into your VBA project by going to File > Import File in the VBA editor.
+' The Dictionary object is part of the Microsoft Scripting Runtime library. To use it, you need to enable this reference in your VBA environment:
+' Tools > References > Look for Microsoft Scripting Runtime
+
+' You may need admin permissions to send http requests use below to test if you have acess
+Sub TestAPIKey()
+    Dim http As Object
+    Dim jsonResponse As String
+    Dim APIKey As String
+    Dim url As String
+
+    APIKey = "d15398f9af248785648105dc60d1f9ce"
+    url = "http://api.exchangeratesapi.io/v1/latest?access_key=" & APIKey & "&base=KES&symbols=USD"
+    
+    ' Create a new HTTP request object
+    Set http = CreateObject("MSXML2.XMLHTTP")
+    
+    ' Send the request to the API
+    On Error GoTo ErrHandler
+    http.Open "GET", url, False
+    http.send
+    
+    ' Get the response text
+    jsonResponse = http.responseText
+    
+    ' Display the response
+    MsgBox jsonResponse
+
+    Exit Sub
+
+ErrHandler:
+    MsgBox "Error occurred: " & Err.Description, vbCritical
+End Sub
+
+
