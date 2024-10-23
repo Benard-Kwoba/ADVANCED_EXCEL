@@ -1,0 +1,66 @@
+Sub FetchDataFromAccess()
+
+    ' Declare variables for the database connection and recordset
+    Dim conn As Object  ' Connection object to handle the connection to Access
+    Dim rs As Object    ' Recordset object to hold the data retrieved from Access
+    Dim sqlQuery As String  ' String to store the SQL query to retrieve data
+    Dim dbFilePath As String  ' String to hold the path to the Access database file
+    Dim ws As Worksheet  ' Worksheet object where the data will be pasted
+    Dim i As Integer  ' Counter variable used to iterate through the recordset fields
+    
+    ' Define the path to your Access database file
+    dbFilePath = "C:\Users\OtienBer\anaconda3\Lib\venv\Access Database\agl_inventory.accdb"
+    
+    ' SQL query to fetch all records from the table 'agl_beer_stock_takes'
+    sqlQuery = "SELECT * FROM agl_beer_stock_takes"
+    
+    ' Set the worksheet where the data will be copied (change "access data" to the correct sheet name)
+    Set ws = ThisWorkbook.Worksheets("access data")
+    
+    ' Create ADO objects: connection and recordset
+    Set conn = CreateObject("ADODB.Connection")  ' Instantiate the connection object
+    Set rs = CreateObject("ADODB.Recordset")  ' Instantiate the recordset object
+    
+    ' Open the connection to the Access database
+    ' The "Provider=Microsoft.ACE.OLEDB.12.0" specifies that you're using the ACE OLEDB provider for Access files
+    ' Data Source is the path to the Access database file
+    On Error GoTo ErrHandler  ' If an error occurs, jump to the error handler section
+    conn.Open "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & dbFilePath & ";"
+    
+    ' Open the recordset by running the SQL query
+    ' This executes the query and loads the data from the Access table into the 'rs' object
+    rs.Open sqlQuery, conn
+    
+    ' Output field names (column headers) from the recordset to the Excel worksheet, starting at cell A1
+    ' 'Fields.Count' gives the number of columns in the recordset
+    For i = 0 To rs.Fields.Count - 1
+        ws.Cells(1, i + 1).Value = rs.Fields(i).Name  ' Write each field name (column header) into the first row of the Excel sheet
+    Next i
+    
+    ' Output the data from the recordset to the worksheet, starting from cell A2
+    ' CopyFromRecordset is a quick way to copy all rows and columns from the recordset to Excel
+    ws.Cells(2, 1).CopyFromRecordset rs
+    
+    ' Clean up by closing the recordset and connection, then release memory
+    rs.Close  ' Close the recordset
+    conn.Close  ' Close the database connection
+    Set rs = Nothing  ' Release the recordset object
+    Set conn = Nothing  ' Release the connection object
+    
+    ' Show a message box to inform the user that the data has been successfully fetched
+    MsgBox "Data fetched successfully from Access!", vbInformation
+    Exit Sub
+
+ErrHandler:
+    ' If an error occurs, show an error message
+    MsgBox "Error occurred: " & Err.Description, vbCritical
+    
+    ' Ensure that both the recordset and connection are properly closed if they're still open
+    If Not rs Is Nothing Then
+        If rs.State = 1 Then rs.Close  ' Close the recordset if it's open
+    End If
+    If Not conn Is Nothing Then
+        If conn.State = 1 Then conn.Close  ' Close the connection if it's open
+    End If
+End Sub
+
