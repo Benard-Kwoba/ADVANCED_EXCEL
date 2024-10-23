@@ -1,0 +1,45 @@
+' Project Title: Embed PDF into Excel Worksheet
+
+Sub EmbedPDFInExcel()
+    ' Declare variables
+    Dim ws As Worksheet            ' Variable to hold the worksheet where the PDF will be embedded
+    Dim pdfPath As String          ' Variable to hold the file path of the PDF
+    Dim oleObject As oleObject     ' Variable to hold the OLE object representing the embedded PDF
+
+    ' Set the worksheet where you want to embed the PDF
+    Set ws = ThisWorkbook.Sheets("Sheet1") ' Change "Sheet1" to the actual name of your target worksheet
+
+    ' Define the path to the PDF file you want to embed
+    pdfPath = "C:\Users\OtienBer\Desktop\BenardKwobaResumeSCAIG.pdf" ' Ensure this path is correct for your file
+
+    ' Check if the PDF file exists at the specified path
+    If Dir(pdfPath) = "" Then
+        ' If the file does not exist, show a message box and exit the subroutine
+        MsgBox "File not found at " & pdfPath, vbExclamation
+        Exit Sub
+    End If
+
+    ' Attempt to embed the PDF as an OLE object
+    On Error GoTo ErrHandler ' Enable error handling for this operation
+
+    ' Add the PDF file as an OLE object in the worksheet
+    ' Index of the icon to use (3 is a generic document icon)
+    Set oleObject = ws.OLEObjects.Add( _
+                     Filename:=pdfPath, _
+                     Link:=False, _
+                     DisplayAsIcon:=True, _
+                     IconFileName:="C:\Windows\System32\shell32.dll", _
+                     IconIndex:=3, _
+                     IconLabel:="Embedded PDF")
+
+    ' Notify the user that the PDF was successfully embedded
+    MsgBox "PDF file successfully embedded in the worksheet!", vbInformation
+    Exit Sub
+
+ErrHandler:
+    ' Handle errors, if any occur during the embedding process
+    MsgBox "Error embedding PDF: " & Err.Description, vbCritical ' Show an error message with the description
+
+End Sub
+
+
