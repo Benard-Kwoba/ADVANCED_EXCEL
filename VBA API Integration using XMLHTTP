@@ -9,7 +9,7 @@ Sub ConvertKESToUSD()
     Dim parsedJson As Object
     
     ' Set your API key (this is a placeholder; replace with your actual key)
-    APIKey = "d15398f9af248785648105dc60d1f9ce" ' Your Access Key for the API
+    APIKey = "e21f8b4cd3a65c72d91b7f84ca319a8f" ' Your Access Key for the API
     
     ' Get the amount in KES from user input
     KESAmount = Application.InputBox("Enter the amount in KES:", "Currency Conversion", Type:=1)
