@@ -1,0 +1,40 @@
+' CustomIFS Function
+' This User Defined Function (UDF) evaluates multiple conditions
+' and returns corresponding values based on those conditions.
+' It mimics the behavior of the native Excel IFS function but allows for more control
+' and flexibility in logical evaluations.
+
+Function CustomIFS(ParamArray conditionsAndValues() As Variant) As Variant
+    Dim i As Long                    ' Loop index variable
+    Dim conditionResult As Variant    ' Result of evaluating the current condition
+    Dim matchFound As Boolean         ' Flag to track if a condition has been met
+
+    matchFound = False                ' Initialize the match flag to False
+
+    ' Check if the number of inputs is valid (should be even for pairs of conditions and values)
+    If UBound(conditionsAndValues) Mod 2 <> 0 Then
+        CustomIFS = CVErr(xlErrValue) ' Return #VALUE! error if pairs are incomplete
+        Exit Function
+    End If
+
+    ' Loop through all provided conditions and corresponding values
+    For i = LBound(conditionsAndValues) To UBound(conditionsAndValues) - 1 Step 2
+        On Error Resume Next           ' Enable error handling to catch potential evaluation errors
+        ' Evaluate the condition at index i
+        conditionResult = CBool(conditionsAndValues(i))
+        On Error GoTo 0                ' Disable error handling to allow for normal error processing
+
+        ' If the condition is met, return the corresponding value at index i + 1
+        If conditionResult Then
+            CustomIFS = conditionsAndValues(i + 1)
+            matchFound = True           ' Set match flag to True
+            Exit Function              ' Exit the function once a match is found
+        End If
+    Next i
+
+    ' If no conditions are met, return the ELSE value (the last argument)
+    If Not matchFound Then
+        CustomIFS = conditionsAndValues(UBound(conditionsAndValues)) ' Return the ELSE value
+    End If
+End Function
+
