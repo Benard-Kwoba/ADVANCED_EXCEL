@@ -1,0 +1,48 @@
+Function FastLookUp(lookupValue As Variant, lookupArray As Range, returnArray As Range) As Variant
+    ' Declare variables
+    Dim i As Long ' Loop counter
+    Dim found As Boolean ' Flag to indicate if the value was found
+
+    ' Initialize found flag as False
+    found = False
+
+    ' Check if the sizes of lookupArray and returnArray are compatible
+    ' Both must have the same number of rows or columns for the function to work correctly
+    If lookupArray.Rows.Count <> returnArray.Rows.Count And lookupArray.Columns.Count <> returnArray.Columns.Count Then
+        FastLookUp = CVErr(xlErrRef) ' Return a reference error if sizes do not match
+        Exit Function ' Exit the function if sizes do not match
+    End If
+
+    ' Check for vertical lookup first
+    If lookupArray.Rows.Count > 1 Then
+        ' Loop through each row of the lookupArray
+        For i = 1 To lookupArray.Rows.Count
+            ' Compare the current cell value with the lookup value
+            If lookupArray.Cells(i, 1).Value = lookupValue Then
+                ' If a match is found, return the corresponding value from the returnArray
+                FastLookUp = returnArray.Cells(i, 1).Value
+                found = True ' Set found flag to True
+                Exit For ' Exit the loop since we found the value
+            End If
+        Next i
+    End If
+
+    ' If the value was not found in vertical lookup, check for horizontal lookup
+    If Not found And lookupArray.Columns.Count > 1 Then
+        ' Loop through each column of the lookupArray
+        For i = 1 To lookupArray.Columns.Count
+            ' Compare the current cell value with the lookup value
+            If lookupArray.Cells(1, i).Value = lookupValue Then
+                ' If a match is found, return the corresponding value from the returnArray
+                FastLookUp = returnArray.Cells(1, i).Value
+                found = True ' Set found flag to True
+                Exit For ' Exit the loop since we found the value
+            End If
+        Next i
+    End If
+
+    ' If the value is not found after both lookups, return a not available error
+    If Not found Then
+        FastLookUp = CVErr(xlErrNA) ' Return a not available error
+    End If
+End Function
