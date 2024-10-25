@@ -1,0 +1,39 @@
+Sub DivideNumbers()
+    Dim numerator As Double
+    Dim denominator As Double
+    Dim result As Double
+
+    ' Prompt the user for input
+    On Error Resume Next ' Ignore errors temporarily
+    numerator = InputBox("Enter the numerator:")
+    denominator = InputBox("Enter the denominator:")
+    On Error GoTo 0 ' Reset error handling to default behavior
+
+    ' Check if the input is numeric
+    If Not IsNumeric(numerator) Or Not IsNumeric(denominator) Then
+        MsgBox "Please enter valid numeric values.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Check if the denominator is not zero
+    If denominator = 0 Then
+        MsgBox "Division by zero is not allowed.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Perform the division
+    On Error Resume Next ' Ignore errors temporarily
+    result = numerator / denominator
+    On Error GoTo 0 ' Reset error handling to default behavior
+
+    ' Check for division-related errors
+    If Err.Number <> 0 Then
+        MsgBox "An error occurred during division:" & vbCrLf & Err.Description, vbExclamation
+        Err.Clear ' Clear the error for subsequent code
+        Exit Sub
+    End If
+
+    ' Display the result
+    MsgBox "Result of division: " & result, vbInformation
+End Sub
+
