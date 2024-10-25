@@ -1,0 +1,47 @@
+Sub CheckUserInputDataType()
+    ' Declare variables
+    Dim userInputs As Variant
+    Dim userInput As Variant
+    Dim dataType As Integer
+    
+    ' Set array of values
+    userInputs = Array(True, 25, 36.5, 37.99554, "Hello", #12/31/2022#, Empty, Null, CreateObject("Scripting.Dictionary"))
+    
+    ' Loop through the values
+    For Each userInput In userInputs
+        ' Check data type using VarType
+        dataType = VarType(userInput)
+        
+        ' Display result
+        Select Case dataType
+            Case vbEmpty
+                MsgBox "Empty value"
+            Case vbNull
+                MsgBox "Null value"
+            Case vbInteger
+                MsgBox CStr(userInput) & " is an Integer value."
+            Case vbLong
+                MsgBox CStr(userInput) & " is a Long value."
+            Case vbSingle
+                MsgBox CStr(userInput) & " is a Single value."
+            Case vbDouble
+                MsgBox CStr(userInput) & " is a Double value."
+            Case vbCurrency
+                MsgBox CStr(userInput) & " is a Currency value."
+            Case vbDate
+                MsgBox CStr(userInput) & " is a Date value."
+            Case vbString
+                MsgBox CStr(userInput) & " is a String value."
+            Case vbObject
+                MsgBox "CreateObject('Scripting.Dictionary')is an Object."
+            Case vbBoolean
+                MsgBox CStr(userInput) & " is a Boolean value."
+            Case vbVariant
+                MsgBox CStr(userInput) & " is a Variant value."
+            Case Else
+                MsgBox CStr(userInput) & " is a value of an unknown data type."
+        End Select
+    Next userInput
+End Sub
+
+
