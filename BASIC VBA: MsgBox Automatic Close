@@ -1,0 +1,40 @@
+Type Product
+    productName As String
+    productCode As Long
+    productBPC As Integer
+End Type
+
+Sub productInfo()
+    Dim sku As Product
+    Dim message As String
+    Dim title As String
+    Dim AckTime As Integer ' acknowledgment time
+    Dim InfoBox As Object
+
+    ' Set product info
+    sku.productName = "Balozi Local 500ml RET"
+    sku.productCode = 681232
+    sku.productBPC = 25
+
+    ' Prepare the message
+    message = "Product Name: " & sku.productName & vbCrLf & _
+              "Product Code: " & sku.productCode & vbCrLf & _
+              "Product BPC: " & sku.productBPC
+    title = "VBA CUSTOM DATA STRUCTURE"
+    
+    ' Set the time for the message box to close automatically (in seconds)
+    AckTime = 3 ' The countdown for the 3 seconds begins as soon as the message box is displayed.
+    
+    ' Create the WScript.Shell object to show the message box
+    Set InfoBox = CreateObject("WScript.Shell")
+    
+    ' Display the message box with a 3-second timeout and information icon
+    Select Case InfoBox.Popup(message, AckTime, title, vbInformation)  ' 64 = vbInformation (Information Icon)
+        Case 1, -1
+            ' Exit if the user clicks OK(case 1; see 2,3, 4, 5) or
+            ' the message box closes automatically after the timeout (case -1)
+            Exit Sub
+    End Select
+End Sub
+
+
