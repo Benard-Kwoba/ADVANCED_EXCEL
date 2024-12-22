@@ -1,0 +1,35 @@
+' Declare the Product type globally in a standard module
+' This defines a custom data type (Product) with three fields: productName, productCode, and productBPC
+Type Product
+    productName As String  ' Field to store the product name
+    productCode As Long    ' Field to store the product code (as a number)
+    productBPC As Integer  ' Field to store the product's BPC (Bottles Per Case)
+End Type
+
+
+Sub productInfo()
+    ' Declare a variable 'sku' of type Product to hold product details
+    Dim sku As Product
+    ' Declare a string variable to hold the message for the message box
+    Dim message As String
+    ' Declare a string variable to hold the title for the message box
+    Dim title As String
+    ' Declare a variable to define the type of message box (information type with OK only)
+    Dim uType As Long
+    
+    ' Set the product information for the 'sku' variable
+    sku.productName = "Balozi Local 500ml RET"  ' Set the product name
+    sku.productCode = 681232  ' Set the product code
+    sku.productBPC = 25  ' Set the BPC value (e.g., 25 bottles per case)
+
+    ' Prepare the message string that will be displayed in the message box
+    message = "Product Name: " & sku.productName & vbCrLf & _
+              "Product Code: " & sku.productCode & vbCrLf & _
+              "Product BPC: " & sku.productBPC
+    title = "VBA CUSTOM DATA STRUCTURE"  ' Set the title for the message box
+    uType = vbInformation + vbOKOnly  ' Define the message box type (information with OK button only)
+    
+    ' Display the message box with the product information, title, and message box type
+    MsgBox message, uType, title  ' Show the message box with the prepared content
+End Sub
+
