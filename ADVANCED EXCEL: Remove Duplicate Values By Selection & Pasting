@@ -1,0 +1,74 @@
+Sub RemoveDuplicates()
+    ' The macro is designed to:
+    ' Create a new Excel workbook.
+    ' Retrieve data from the clipboard.
+    ' Paste that data into the new workbook.
+    ' Remove any duplicate entries from the pasted data.
+    ' Copy the unique values back to the clipboard.
+    ' Optionally, close the new workbook without saving it.
+    
+    Dim newWorkbook As Workbook
+    Dim ws As Worksheet
+    Dim uniqueRange As Range
+    Dim selectedRange As Range
+    Dim cell As Range
+    Dim tempList As Collection
+    Dim i As Long
+    
+    ' Get the currently selected range
+    On Error Resume Next
+    Set selectedRange = Application.Selection
+    On Error GoTo 0
+    
+    ' Check if a range is selected
+    If selectedRange Is Nothing Then
+        MsgBox "Please select a range of cells first.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Create a new workbook
+    Set newWorkbook = Workbooks.Add
+  
+    ' Set the first worksheet
+    Set ws = newWorkbook.Worksheets(1)
+    
+    ' Copy the selected range to the new worksheet
+    selectedRange.Copy Destination:=ws.Range("A1")
+    
+    ' Define the range to include all cells in column A
+    Set uniqueRange = ws.Range("A1:A" & ws.Cells(ws.Rows.Count, 1).End(xlUp).Row)
+    
+    ' Create a collection to store unique values
+    Set tempList = New Collection
+    
+    ' Loop through each cell in the range
+    On Error Resume Next ' Ignore errors for duplicate keys
+    For Each cell In uniqueRange
+        If Trim(cell.Value) <> "" Then ' Check if the cell is not empty or just spaces
+            tempList.Add cell.Value, CStr(cell.Value) ' Use the value as the key
+        End If
+    Next cell
+    On Error GoTo 0 ' Resume normal error handling
+    
+    ' Clear the original range
+    uniqueRange.ClearContents
+    
+    ' Paste unique values back to the worksheet
+    For i = 1 To tempList.Count
+        ws.Cells(i, 1).Value = tempList(i)
+    Next i
+    
+    ' Define the new unique range
+    Set uniqueRange = ws.Range("A1:A" & tempList.Count)
+    
+    ' Copy unique values back to clipboard
+    uniqueRange.Copy
+    
+    ' Inform the user
+    ' MsgBox "Unique values have been copied to the clipboard.", vbInformation
+    
+    ' Optional: Clean up by closing the new workbook without saving
+    Application.DisplayAlerts = False
+    newWorkbook.Close SaveChanges:=False
+    Application.DisplayAlerts = True
+End Sub
