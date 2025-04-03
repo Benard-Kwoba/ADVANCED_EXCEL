@@ -12,3 +12,38 @@ Sub convert_formulas_to_values()
         End If
     Next rng
 End Sub
+
+
+
+' --------------------------------------------------
+' Subroutine: convert_formulas_to_values
+' Description: Use an array to store values for faster processing
+' Usage: Select the range with formulas and run the macro.
+' --------------------------------------------------
+Sub Formula_Values()
+    Dim rng As Range
+        
+        ' Ensure selection is a valid range
+        If TypeName(Selection) <> "Range" Then
+            MsgBox "Please select a valid range!", vbExclamation, "Error"
+            Exit Sub
+        End If
+        
+        ' Get only visible cells (fast method)
+        On Error Resume Next
+        Set rng = Selection.SpecialCells(xlCellTypeVisible)
+        On Error GoTo 0
+        
+        ' If no visible cells, exit
+        If rng Is Nothing Then
+            MsgBox "No visible cells selected!", vbExclamation, "Error"
+            Exit Sub
+        End If
+        
+        ' Use an array to store values for faster processing
+        Dim data As Variant
+        data = rng.Value  ' Store formulas as values in an array
+        
+        ' Assign back to range in one step (avoiding slow loops)
+        rng.Value = data
+End Sub
