@@ -1,0 +1,46 @@
+function main(wb: ExcelScript.Workbook): void {
+  // ========================
+  // INTERNAL FUNCTION SECTION
+  // ========================
+
+  // This function filters and returns only visible worksheets from the given array.
+  function getVisibleSheets(allSheets: ExcelScript.Worksheet[]): ExcelScript.Worksheet[] {
+    return allSheets.filter(sheet => sheet.getVisibility() === ExcelScript.SheetVisibility.visible);
+  }
+
+  // This function takes a range (like a cell) and returns its fill color as a hex string.
+  function getFillColorOfCell(range: ExcelScript.Range): string {
+    return range.getFormat().getFill().getColor();
+  }
+
+  // ========================
+  // MAIN SCRIPT LOGIC SECTION
+  // ========================
+
+  // Get the first worksheet in the workbook (index 0)
+  const firstWs: ExcelScript.Worksheet = wb.getWorksheets()[0];
+
+  // Log the name of the first worksheet to the console
+  console.log(`First Sheet Name: ${firstWs.getName()}`);
+
+  // Get the fill color of cell A1 in the first worksheet using the helper function
+  let cellCol: string = getFillColorOfCell(firstWs.getRange("A1"));
+
+  // Log the fill color of cell A1
+  console.log(`The fill color of cell A1 is: ${cellCol}`);
+
+  // Count the total number of worksheets in the workbook
+  const wsCount: number = wb.getWorksheets().length;
+
+  // Log the total number of worksheets
+  console.log(`Total number of worksheets: ${wsCount}`);
+
+  // Get all worksheets in the workbook
+  const allSheets = wb.getWorksheets();
+
+  // Filter only visible worksheets using the helper function
+  let visibleSheets = getVisibleSheets(allSheets);
+
+  // Log the number of visible worksheets
+  console.log(`Total number of visible worksheets: ${visibleSheets.length}`);
+}
