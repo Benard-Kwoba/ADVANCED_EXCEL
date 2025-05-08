@@ -1,0 +1,82 @@
+' VBA equivalent of the Python SAP extraction script
+Sub ExtractSAPData()
+    Dim fso As Object
+    Dim folderPath As String
+    Dim sapGuiAuto As Object
+    Dim application As Object
+    Dim connection As Object
+    Dim session As Object
+    Dim startDate As Date
+    Dim endDate As Date
+    Dim currentDate As Date
+    Dim sapDate As String
+    Dim fileDate As String
+    Dim filename As String
+    
+    folderPath = "C:\Users\OtienBer\Desktop\SAP_EXTRACTS"
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    If Not fso.FolderExists(folderPath) Then
+        fso.CreateFolder folderPath
+    End If
+    
+    ' Get the SAP GUI Scripting Engine
+    Set sapGuiAuto = GetObject("SAPGUI")
+    Set application = sapGuiAuto.GetScriptingEngine
+    Set connection = application.Children(0)
+    Set session = connection.Children(0)
+
+    ' Define date range (Example: May 2025)
+    startDate = DateSerial(2025, 5, 1)
+    endDate = DateSerial(2025, 5, 31)
+    currentDate = startDate
+
+    Do While currentDate <= endDate
+        sapDate = Format(currentDate, "mm/dd/yyyy")
+        fileDate = Format(currentDate, "yyyy_mm_dd")
+        filename = "BREAKAGES_" & fileDate & ".XLS"
+
+        Debug.Print "Extracting data for " & sapDate
+
+        ' Interact with SAP GUI
+        session.findById("wnd[0]").maximize
+        session.findById("wnd[0]/tbar[0]/okcd").Text = "/nmb51"
+        session.findById("wnd[0]").sendVKey 0
+        session.findById("wnd[0]/usr/btn%_WERKS_%_APP_%-VALU_PUSH").press
+        session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/" & _
+            "tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,0]").Text = "TA2"
+        session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/" & _
+            "tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,1]").Text = "TA2"
+        session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/" & _
+            "tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,1]").SetFocus
+        session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/" & _
+            "tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,1]").caretPosition = 3
+        session.findById("wnd[1]/tbar[0]/btn[8]").press
+
+        session.findById("wnd[0]/usr/ctxtLGORT-LOW").Text = "5004"
+        session.findById("wnd[0]/usr/ctxtBUDAT-LOW").Text = sapDate
+        session.findById("wnd[0]/usr/ctxtBUDAT-HIGH").Text = sapDate
+        session.findById("wnd[0]/usr/ctxtALV_DEF").Text = "BANAYAHU"
+        session.findById("wnd[0]/usr/ctxtALV_DEF").SetFocus
+        session.findById("wnd[0]/usr/ctxtALV_DEF").caretPosition = 8
+        session.findById("wnd[0]").sendVKey 0
+        session.findById("wnd[0]/tbar[1]/btn[8]").press
+        session.findById("wnd[0]/mbar/menu[3]/menu[6]/menu[0]").Select
+        session.findById("wnd[0]").sendVKey 9
+        session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/" & _
+            "radSPOPLI-SELFLAG[1,0]").Select
+        session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/" & _
+            "radSPOPLI-SELFLAG[1,0]").SetFocus
+        session.findById("wnd[1]/tbar[0]/btn[0]").press
+
+        session.findById("wnd[1]/usr/ctxtDY_PATH").Text = folderPath
+        session.findById("wnd[1]/usr/ctxtDY_FILENAME").Text = filename
+        session.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = Len(filename)
+        session.findById("wnd[1]/tbar[0]/btn[11]").press
+
+        Debug.Print "Saved file: " & filename
+
+        currentDate = currentDate + 1
+    Loop
+End Sub
+
+
