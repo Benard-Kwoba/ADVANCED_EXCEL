@@ -1,0 +1,20 @@
+Private Sub Workbook_Open()
+    Const DESTROY_DATE As Date = #8/20/2025 5:30:00 PM#
+    Const MSG_TEXT As String = "This workbook has passed its deadline and will now close permanently."
+    
+    Dim workbookPath As String
+    workbookPath = ThisWorkbook.FullName
+    
+    If Now() > DESTROY_DATE Then
+        MsgBox MSG_TEXT, vbCritical + vbOKOnly, "Deadline Passed"
+        
+        ' Schedule deletion after Excel closes
+        Dim cmd As String
+        cmd = "cmd /c ping 127.0.0.1 -n 3 > nul & del """ & workbookPath & """"
+        Shell cmd, vbHide
+        
+        ' Close workbook
+        ThisWorkbook.Saved = True
+        ThisWorkbook.Close savechanges:=False
+    End If
+End Sub
